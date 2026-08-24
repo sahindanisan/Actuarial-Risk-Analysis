@@ -1,4 +1,3 @@
-# Actuarial-Risk-Analysis
 # Sigorta Hasar Olasılığı Modellemesi: Aktüeryal GLM ve Makine Öğrenmesi Kıyaslaması
 ##  Proje Amacı
 Bu proje, sigortacılık sektörünün temel problemlerinden biri olan **Hasar Olasılığı (Claim Probability)** tahminlemesini ele almaktadır. Projede; geleneksel parametrik aktüeryal modelleme (GLM) ile modern makine öğrenmesi (Random Forest) yaklaşımlarının, doğrusal olmayan (non-linear) riskleri yakalama ve şeffaflık kapasiteleri karşılaştırılmıştır.
