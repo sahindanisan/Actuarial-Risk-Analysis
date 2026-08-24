@@ -1,28 +1,24 @@
-# Sigorta Hasar Olasılığı Modellemesi: Aktüeryal GLM ve Makine Öğrenmesi Kıyaslaması
-##  Proje Amacı
-Bu proje, sigortacılık sektörünün temel problemlerinden biri olan **Hasar Olasılığı (Claim Probability)** tahminlemesini ele almaktadır. Projede; geleneksel parametrik aktüeryal modelleme (GLM) ile modern makine öğrenmesi (Random Forest) yaklaşımlarının, doğrusal olmayan (non-linear) riskleri yakalama ve şeffaflık kapasiteleri karşılaştırılmıştır.
+# 📊 Sigorta Hasar Olasılığı Modellemesi: GLM ve Random Forest Kıyaslaması
 
-## Metodoloji ve Veri Üretimi
-Gerçek müşteri verileri KVKK kapsamında gizlilik politikalarıyla korunduğu için, bu projede sektörel dinamikleri yansıtan 5.000 satırlık sentetik bir veri seti üretilmiştir. 
+## 📝 Projenin Amacı
+Bu çalışmada, sigortacılık veri bilimindeki en temel konulardan biri olan "Hasar Olasılığı" (Claim Probability) tahminlemesi üzerine çalıştım. Geleneksel aktüeryal yaklaşım olan GLM (Genelleştirilmiş Doğrusal Model) ile Makine Öğrenmesi (Random Forest) algoritmalarını karşılaştırarak, hangisinin karmaşık riskleri daha iyi yakaladığını analiz ettim.
 
-**Aktüeryal Varsayım:** Trafik sigortalarında 18-25 yaş arası genç sürücüler (tecrübesizlik) ve 65+ yaş üstü sürücüler (refleks zayıflaması) istatistiksel olarak en yüksek risk grubunu oluşturur. Bu gerçeği yansıtmak adına simülasyonda `Yaş` değişkeni ile 'Hasar Olasılığı' arasında bilerek **U-şekilli (quadratic)** bir ilişki tanımlanmıştır.
+## ⚙️ Veri Seti ve Kurgu
+Gerçek sigorta verileri KVKK kapsamında gizli olduğu için, sektörel dinamikleri yansıtan 5.000 satırlık sentetik bir veri seti kurguladım.
+* **Temel Varsayım:** Trafikte genç sürücülerin tecrübesizlikten, ileri yaştaki sürücülerin ise refleks kaybından dolayı daha riskli olduğu gerçeğinden yola çıkarak; Yaş ile Hasar Olasılığı arasına bilerek **U-şekilli (quadratic)** bir ilişki yerleştirdim.
 
-## Veri Mühendisliği ve Ön İşleme
-Makine öğrenmesi modellerinin sağlığını korumak adına şu adımlar atılmıştır:
-* **Eksik Veri Yönetimi (Imputation):** Yaş değişkenindeki eksik (NaN) değerler, olası uç değerlerin (outliers) istatistiksel sapma yaratmasını engellemek amacıyla ortalama (mean) yerine **medyan (ortanca)** ile doldurulmuştur.
-* **Kategorik Dönüşüm:** Kategorik veriler One-Hot Encoding ile sayısallaştırılmış, ancak **Kukla Değişken Tuzağı'ndan (Dummy Variable Trap - Multicollinearity)** kaçınmak için `drop_first=True` parametresi kullanılarak referans (base) sınıflar oluşturulmuştur.
+## 🧹 Veri Temizliği ve Ön İşleme
+* **Eksik Veriler:** Yaş değişkenindeki boş (NaN) değerleri, olası uç değerlerden (outliers) etkilenmemesi için ortalama yerine **medyan** ile doldurdum.
+* **Kategorik Dönüşüm:** Şehir ve Cinsiyet gibi verileri One-Hot Encoding ile sayısal hale getirdim. Burada Kukla Değişken Tuzağı'na (Multicollinearity) düşmemek için `drop_first=True` parametresini kullanarak referans sınıfları belirledim.
 
-## Modelleme Takası: Açıklanabilirlik vs. Tahmin Gücü
-Endüstride yasal otoritelerin şeffaflık beklentisi ile veri biliminin performans arayışı arasındaki zıtlık şu 3 model üzerinden test edilmiştir:
+## 🧠 Model Karşılaştırması ve Sonuçlar
+Modelleri kurarken şeffaflık ve tahmin gücü (AUC) arasındaki farkları test ettim:
 
-1. **Klasik GLM (Sadece Doğrusal Yaş):** Modele sadece doğrusal `Yaş` değişkeni verildiğinde, model yaşlılardaki artan riski göremeyip U-şekilli riski yakalamada tamamen başarısız olmuştur (Grafikteki Kırmızı Çizgi).
-2. **Polinomsal GLM (Aktüeryal Müdahale):** Klasik modele bir aktüeryal feature engineering adımı olarak `Yaş²` (quadratic) değişkeni eklendiğinde, GLM parabolik bükülmeyi başarmış ve gerçek dünya riskine kusursuz uyum sağlamıştır (Mavi Çizgi). SEDDK gibi otoritelerin talep ettiği şeffaflık ve doğru fiyatlama burada sağlanır.
-3. **Random Forest:** Ağaç tabanlı bu model, hiçbir manuel `Yaş²` müdahalesine ihtiyaç duymadan U-şekilli ilişkiyi doğası gereği başarıyla kavramıştır (Yeşil Çizgi). 
+1. **Klasik GLM:** Sadece doğrusal "Yaş" verisiyle eğitildiğinde model U-şekilli riski göremedi ve başarısız oldu (Kırmızı Çizgi).
+2. **Polinomsal GLM:** Aktüeryal bir bakış açısıyla modele `Yaş²` değişkenini manuel olarak eklediğimde, model gerçek dünya riskine mükemmel uyum sağladı (Mavi Çizgi).
+3. **Random Forest:** Doğası gereği karar ağaçlarıyla çalıştığı için hiçbir karesel müdahaleye gerek duymadan U-şeklini kendiliğinden öğrendi (Yeşil Çizgi).
 
-## Analitik Bulgu: Dışadeğerleme (Extrapolation) Zafiyeti
-Grafik incelendiğinde, Random Forest'ın (Yeşil Çizgi) 70+ yaş gibi verinin seyrekleştiği uç (ekstrem) noktalarda gerçeği yansıtmayan ani bir düşüş yaşadığı görülmüştür. Ağaç tabanlı modeller **dışadeğerleme (extrapolation)** yapamazlar; yani daha önce görmedikleri veya çok az gördükleri veri aralıklarında mantık kurmak yerine ezbere (overfitting) düşerler. 
-
-Bu bulgu, veri azlığının yaşandığı ekstrem risk gruplarında matematiksel bir fonksiyona dayanan parametrik **GLM modellerine neden hala güvenmemiz gerektiğini** kanıtlamaktadır.
-
+## 🔍 Önemli Bulgu: Dışadeğerleme (Extrapolation) Sorunu
+Random Forest genel olarak daha iyi bir skor verse de, grafikte görüldüğü üzere 70+ yaş gibi verinin az olduğu uç noktalarda mantıksız bir düşüş yaşadı (Ezberleme/Overfitting). Bu durum bana, ekstrem risk gruplarında neden hala matematiksel fonksiyonlara dayanan parametrik GLM modellerine ihtiyacımız olduğunu uygulamalı olarak gösterdi.
 ## 🛠️ Kullanılan Teknolojiler
 `Python` `Pandas` `NumPy` `Statsmodels` `Scikit-Learn` `Matplotlib`
